@@ -12,8 +12,11 @@
 | 9:00 - 9:10 | Bagel Config + Coffee Download + Computer Setup |
 | ? | Course Intro | Jeff |
 | ? | Connectivity Background | Lucrezia |
+| ? | Connectivity Code | |
 | 11:45 - 12:30 | Lunch  
 | ?           |  Decoding Background  |  Lina | 
+| ?           |  Decoding Code  |  | 
+
 
 
 
