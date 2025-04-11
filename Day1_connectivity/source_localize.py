@@ -54,8 +54,8 @@ bad_ch_names = ['MLO42', 'MZO03']
 # define some variables
 fmin = 0.5
 fmax = 100
-sfreq = 1000
-epoch_len = 4.0
+sfreq = 600
+epoch_len = 5.0
 n_jobs=20
 
 # parameters for rejecting bad epochs
@@ -113,11 +113,12 @@ raw = mne.io.read_raw_ctf(raw_fname, preload=True, system_clock='ignore',
 if 'bad_ch_names' in locals():
     raw.info['bads']  = bad_ch_names
 
+raw.resample(sfreq, n_jobs=n_jobs)
 raw.notch_filter([60,120,180], n_jobs=n_jobs)
 raw.filter(fmin, fmax, n_jobs=n_jobs)
 
-tmax = epo_duration = 5.0    
-evts = mne.make_fixed_length_events(raw, duration=epo_duration)
+tmax = epoch_len    
+evts = mne.make_fixed_length_events(raw, duration=epoch_len)
 reject_dict = dict(mag=5e-12)
 epochs = mne.Epochs(raw, evts, reject=reject_dict, #flat=flat_dict,
                 preload=True, baseline=None, tmin=0, tmax=tmax)
@@ -192,10 +193,53 @@ stcs = apply_lcmv_epochs(epochs=epochs, filters=filters, return_generator=False)
 #%% Get the parcels
 
 labels = mne.read_labels_from_annot(
-    fs_subject, "HCPMMP1", subjects_dir=subjects_dir
+    fs_subject, "aparc", subjects_dir=subjects_dir
 )
 
-#Need to get parcels - then do COM
-tmp.center_of_mass(restrict_vertices=True)
+def get_centroid_idx(label=None, stc=None, hemi=None):
+    '''
+    Return the numpy index of the centroid corresponding to the center of mass
+    '''
+    if hemi=='lh':
+        hemi_idx=0
+        hemi_offset = 0
+    else:
+        hemi_idx=1
+        hemi_offset = len(stc.vertices[0])
+    _used_verts = label.get_vertices_used(stc.vertices[hemi_idx])
+    #Get the center of mass from the used label vertices - returns freesurfer vertex
+    COM_idx = label.center_of_mass(restrict_vertices=_used_verts, subjects_dir=subjects_dir)
+    #Get the numpy index of this vertex
+    np_idx = np.where(stc.vertices[hemi_idx]==COM_idx)[0][0]
+    np_idx += hemi_offset
+    return np_idx
+
+
+template_stc = stcs[0]
+label_idxs = {i.name:None for i in labels}
+for label in labels:
+    COM = label.center_of_mass(restrict_vertices=True, subjects_dir=subjects_dir)
+    label_idxs[label.name] = get_centroid_idx(label=label, stc=template_stc, hemi=label.hemi)
+    
+
+
+# test_stc = copy.deepcopy(stcs[0])
+# test_stc._data=np.zeros(test_stc._data.shape)
+# test_stc._data[4011,:]=5
+# test_stc._data[4745,:]=5
+#  'precuneus-lh': 4011,
+#  'precuneus-rh': 4745,
+
+#%%  Convert STC matrix into centroid ROI matrix
+roi_len=len(labels)
+roi_idx_vector = list(label_idxs.values())
+#Initialize matrix   Epochs X ROI X Time
+roi_matrix = np.zeros([len(stcs), roi_len, template_stc.shape[-1]])
+for epo_idx, stc in enumerate(stcs):
+    roi_matrix[epo_idx, :, :] = stc._data[roi_idx_vector, :]
+    
+np.save(f'/tmp/sub-{bids_id}.npy', roi_matrix)    
+
+
 
 
