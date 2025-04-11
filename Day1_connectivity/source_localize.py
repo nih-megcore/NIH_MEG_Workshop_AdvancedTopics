@@ -47,7 +47,7 @@ if __name__=='__main__':
 bids_root = '/fast2/BIDS'
 bids_id = 'ON02811'
 raw_fname = op.join(bids_root, f'sub-{bids_id}', 'ses-1','meg', f'sub-{bids_id}_ses-1_task-rest_run-01_meg.ds')
-bad_ch_names = ['MLO42-1609', 'MZO03-1609']
+bad_ch_names = ['MLO42', 'MZO03']
 
 '''
 
@@ -107,15 +107,25 @@ def get_subj_logger(subjid, session, task, run, log_dir=None):
 
 #%%
 raw_fname = op.join(bids_root, f'sub-{bids_id}', 'ses-01','meg', f'sub-{bids_id}_ses-01_task-rest_run-01_meg.ds')
-raw = mne.io.read_raw_ctf(raw_fname, preload=True, system_clock='ignore')
+raw = mne.io.read_raw_ctf(raw_fname, preload=True, system_clock='ignore', 
+                          clean_names=True)
+
+if 'bad_ch_names' in locals():
+    raw.info['bads']  = bad_ch_names
 
 raw.notch_filter([60,120,180], n_jobs=n_jobs)
 raw.filter(fmin, fmax, n_jobs=n_jobs)
 
-# raw.save(
-    
+tmax = epo_duration = 5.0    
+evts = mne.make_fixed_length_events(raw, duration=epo_duration)
+reject_dict = dict(mag=5e-12)
+epochs = mne.Epochs(raw, evts, reject=reject_dict, #flat=flat_dict,
+                preload=True, baseline=None, tmin=0, tmax=tmax)
 
-epo =
+data_cov = mne.compute_covariance(epochs)
+
+
+
 
 
 
@@ -125,7 +135,7 @@ bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='meg',
 anat_bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='anat',
                           extension='.nii.gz', acquisition = 'mprage', suffix = 'T1w', session = '01')
 
-deriv_path = bids_path.copy().update(root=deriv_dir, check=False)
+deriv_path = bids_path.copy().update(root=project_dir, check=False)
 deriv_path.directory.mkdir(exist_ok=True, parents=True)
 
 raw_fname = bids_path.copy().update(run = '01', session = '01')
@@ -135,7 +145,7 @@ src_fname = deriv_path.copy().update(suffix='src', extension='.fif')
 trans_fname = deriv_path.copy().update(suffix='trans',extension='.fif')
 raw = mne.io.read_raw_ctf(raw_fname.fpath, system_clock = 'ignore', clean_names =True)
 
-# subjects_dir = mne_bids.read.get_subjects_dir()
+
 fs_subject = 'sub-'+bids_path.subject
 if not bem_fname.fpath.exists():
     mne.bem.make_watershed_bem(fs_subject, subjects_dir=subjects_dir, overwrite=True)
@@ -164,9 +174,28 @@ else:
 if fwd_fname.fpath.exists():
     fwd = mne.read_forward_solution(fwd_fname)
 else:
-    fwd = mne.make_forward_solution(raw.info, trans, src, bem_sol, eeg=False, 
+    fwd = mne.make_forward_solution(epochs.info, trans, src, bem_sol, eeg=False, 
                                     n_jobs=n_jobs)
     mne.write_forward_solution(fwd_fname.fpath, fwd, overwrite=True)
 
+
+#%% Beamformer section
+
+# epochs.pick_types(meg=True, ref_meg=False)
+
+filters = make_lcmv(epochs.info, fwd, data_cov, #noise_cov=noise_cov, 
+                    reg=0.01, pick_ori='max-power') #rank=epo_rank, pick_ori='max-power') 
+
+stcs = apply_lcmv_epochs(epochs=epochs, filters=filters, return_generator=False)  
+
+
+#%% Get the parcels
+
+labels = mne.read_labels_from_annot(
+    fs_subject, "HCPMMP1", subjects_dir=subjects_dir
+)
+
+#Need to get parcels - then do COM
+tmp.center_of_mass(restrict_vertices=True)
 
 
