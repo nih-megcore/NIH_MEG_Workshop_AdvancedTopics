@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "NIH-Workshop-Adv-Topics-2025"
+description = "Connectivity and Decoding Overview"
+readme = "README.md"
+requires-python = ">=3.10"
+
+authors = [
+  { name="Jeff Stout", email="stoutjd@nih.gov" },
+  { name="Lucrezia Liuzzi", email="lucrezia.liuzzi@nih.gov"}, 
+  { name="Lina Teichmann", email="lina.teichmann@nih.gov"},
+]
+
+license = {text = "UNLICENSE"}
+classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: UNLICENSE",
+        "Operating System :: Linux/Unix",
+    ]
+dependencies = [
+'mne==1.9', 'joblib', 'mne_bids==0.16','pandas', 'nilearn','mne_connectivity==0.7', 'scikit-learn==1.6.1','jupyter'
+]
+dynamic = ["version"]
+
+[tool.setuptools.packages.find]
+include = ["*"]
+
