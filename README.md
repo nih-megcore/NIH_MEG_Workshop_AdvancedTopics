@@ -41,6 +41,7 @@ jupyter lab
 ```
 
 <a id="Install"></a>
+# Install Code
 Install using make: <br>
 `make install_env`
 <br>
