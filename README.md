@@ -2,6 +2,7 @@
 
 [Calendar](#Calendar) <br>
 [Biowulf Setup](#BiowulfInfo) <br>
+[Install](#Install) <br>
 
 
 <a id="Calendar"></a>
@@ -38,3 +39,13 @@ get_data   #Copy and untar the data to your /data/${USER}/meg_data_workshop
 cd NIMH_MEG_workshop
 jupyter lab
 ```
+
+<a id="Install"></a>
+Install using make: <br>
+`make install_env`
+<br>
+Install from conda environment.yml file:<br>
+`conda env create --name envname --file=environments.yml`
+
+
+
