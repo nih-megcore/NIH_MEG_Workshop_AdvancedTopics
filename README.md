@@ -41,7 +41,7 @@ jupyter lab
 ```
 
 <a id="Install"></a>
-# Install Code
+# Install Code (on your own system)
 Install using make: <br>
 `make install_env`
 <br>
