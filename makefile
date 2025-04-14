@@ -8,4 +8,4 @@ CONDA_ACTIVATE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda activ
 
 install_env:
 	mamba create --override-channels --channel=conda-forge --name=nih_meg_workshop_adv pip 'python==3.12'  -y
-	($(CONDA_ACTIVATE) nih_meg_workshop_adv ; pip install -e .
+	($(CONDA_ACTIVATE) nih_meg_workshop_adv ; pip install -e .)
