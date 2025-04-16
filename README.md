@@ -16,6 +16,7 @@
 | ? | Connectivity Code | |
 | 11:45 - 12:30 | Lunch  
 | ?           |  Decoding Background  |  Lina | 
+| ?           |  Decoding Applications  |  Shruti, Alexis, Sebastian | 
 | ?           |  Decoding Code  |  | 
 
 
