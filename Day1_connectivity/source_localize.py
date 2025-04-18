@@ -136,19 +136,26 @@ def append_bad_ch_annot(raw, subjid):
         
     #Load the bad semgents info     
     dframe_fname = op.join(os.getcwd(), 'BAD_segments', f'sub-{subjid}_bad.csv')
-    dframe = pd.read_csv(dframe_fname)
-    annot = mne.Annotations(onset=dframe.onset.values,
-                           duration=dframe.duration.values, 
-                           description=dframe.description.values,
-                           )
-    raw.set_annotations(annot)
+    if op.exists(dframe_fname):
+        dframe = pd.read_csv(dframe_fname)
+        annot = mne.Annotations(onset=dframe.onset.values,
+                               duration=dframe.duration.values, 
+                               description=dframe.description.values,
+                               )
+        raw.set_annotations(annot)
+    else:
+        print(f'There is not a csv file for this subject {subjid}')
     return raw
 
 
 
 
 #%%
-raw_fname = op.join(bids_root, f'sub-{bids_id}', 'ses-01','meg', f'sub-{bids_id}_ses-01_task-rest_run-01_meg.ds')
+if op.exists(f'sub-{bids_id}/ses-01'):
+    raw_fname = op.join(bids_root, f'sub-{bids_id}', 'ses-01','meg', f'sub-{bids_id}_ses-01_task-rest_run-01_meg.ds')
+elif  op.exists(f'sub-{bids_id}/ses-1'):
+    raw_fname = op.join(bids_root, f'sub-{bids_id}', 'ses-1','meg', f'sub-{bids_id}_ses-1_task-rest_run-01_meg.ds')
+    assert op.exists(raw_fname)
 raw = mne.io.read_raw_ctf(raw_fname, preload=True, system_clock='ignore', 
                           clean_names=True)
 
@@ -179,12 +186,25 @@ data_cov = mne.compute_covariance(epochs)
 bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='meg',
                      task=rest_taskname, session ='01', run = '01')
 anat_bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='anat',
-                          extension='.nii.gz', acquisition = 'mprage', suffix = 'T1w', session = '01')
+                          extension='.nii.gz', acquisition = 'mprage', suffix = 'T1w', session = '01', run='01')
+raw_fname = bids_path.copy() 
+if not raw_fname.fpath.exists():
+    bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='meg',
+                         task=rest_taskname, session ='1', run = '01')
+    anat_bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='anat',
+                              extension='.nii.gz', acquisition = 'mprage', suffix = 'T1w', session = '1', run='01')
+    raw_fname = bids_path.copy() #.update(run = '1', session = '01')
+
+assert raw_fname.fpath.exists()
+if not anat_bids_path.fpath.exists():
+    anat_bids_path.update(acquisition=None)
+assert anat_bids_path.fpath.exists()
+
 
 deriv_path = bids_path.copy().update(root=project_dir, check=False)
 deriv_path.directory.mkdir(exist_ok=True, parents=True)
 
-raw_fname = bids_path.copy().update(run = '01', session = '01')
+#raw_fname = bids_path.copy().update(run = '01', session = '01')
 bem_fname = deriv_path.copy().update(suffix='bem', extension='.fif')
 fwd_fname = deriv_path.copy().update(suffix='fwd', extension='.fif')
 src_fname = deriv_path.copy().update(suffix='src', extension='.fif')
@@ -241,6 +261,9 @@ labels = mne.read_labels_from_annot(
     fs_subject, "aparc", subjects_dir=subjects_dir
 )
 
+#Re-order labels to be lhemi then rhemi
+labels = labels[::2] + labels[1::2]
+
 def get_centroid_idx(label=None, stc=None, hemi=None):
     '''
     Return the numpy index of the centroid corresponding to the center of mass
@@ -267,9 +290,13 @@ for label in labels:
     label_idxs[label.name] = get_centroid_idx(label=label, stc=template_stc, hemi=label.hemi)
     
 
-
+# import copy
 # test_stc = copy.deepcopy(stcs[0])
 # test_stc._data=np.zeros(test_stc._data.shape)
+# for idx in label_idxs.values():
+#     test_stc._data[idx,:]=5
+
+
 # test_stc._data[4011,:]=5
 # test_stc._data[4745,:]=5
 #  'precuneus-lh': 4011,
