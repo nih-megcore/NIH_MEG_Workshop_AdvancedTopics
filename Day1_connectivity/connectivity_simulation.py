@@ -8,8 +8,9 @@ Created on Tue Apr  8 10:37:30 2025
 
 import numpy as np
 import matplotlib.pyplot as plt
+import mne
 from mne_connectivity import spectral_connectivity_epochs
-
+from mne_connectivity import envelope_correlation
 #%% 
 fs = 600 # sampling frequency
 t = 5 # total time in seconds
@@ -18,8 +19,8 @@ fa = 4 # amplitude modulation frequency
 phi2 = np.deg2rad(90) # phase shift of oscillation 2
 phi3 = np.deg2rad(10) # phase shift of oscillation 2
 
-phia2 = np.deg2rad(30) # phase shift of amplitude modulation for oscillation 2
-phia3 = np.deg2rad(10) # phase shift of amplitude modulation for oscillation 2
+phia2 = np.deg2rad(10) # phase shift of amplitude modulation for oscillation 2
+phia3 = np.deg2rad(90) # phase shift of amplitude modulation for oscillation 2
 
 time = np.linspace(0, t, int(fs*t), endpoint=False)
 
@@ -125,3 +126,56 @@ plt.xlabel("Phase Difference")
 plt.ylabel("Estimated Connectivity")
 
 plt.show()
+
+#%% Envelope correlation
+l_freq = 2
+h_freq = 55
+filtered_data = mne.filter.filter_data(simdata, fs, l_freq, h_freq)
+
+n_del = int(fs/4)
+timekeep = np.ones(time.shape)
+timekeep[0:n_del] = 0
+timekeep[-n_del:len(time)] = 0
+timef = time[timekeep==1]
+
+filtered_data = filtered_data[:,:,timekeep==1]
+
+# plot the simulated data
+ep = 5 # epoch to plot
+fig1, ax = plt.subplots()
+ax.plot(timef,filtered_data[ep,0,:])
+ax.plot(timef,filtered_data[ep,1,:])
+ax.plot(timef,filtered_data[ep,2,:])
+ax.set(xlabel='time (s)', title='%d-%dHz filtered simulated data'%(l_freq,h_freq))
+ax.set(xlim=(1, 1.5))
+
+envcon = envelope_correlation(filtered_data, 
+                     names=None, 
+                     orthogonalize=False, 
+                     log=False, 
+                     absolute=True, 
+                     verbose=None)
+# Average over epochs
+envcon = envcon.combine()
+envcon = envcon.get_data(output="dense")[:, :, 0]
+
+
+envcon_ortho = envelope_correlation(filtered_data, 
+                     names=None, 
+                     orthogonalize='pairwise', 
+                     log=False, 
+                     absolute=True, 
+                     verbose=None)
+# Average over epochs
+envcon_ortho = envcon_ortho.combine()
+envcon_ortho = envcon_ortho.get_data(output="dense")[:, :, 0]
+
+def plot_corr(corr, title):
+    fig, ax = plt.subplots(figsize=(4, 4), constrained_layout=True)
+    im = ax.imshow(corr, cmap="viridis", clim=[0, 0.7])  # clim=np.percentile(corr, [5, 95])
+    fig.colorbar(im, orientation='vertical')
+    fig.suptitle(title)
+
+
+plot_corr(envcon, "Envelope correlation  non-corrected")
+plot_corr(envcon_ortho, "Envelope correlation with pairwise orthogonalization")
