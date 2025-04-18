@@ -10,6 +10,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=DeprecationWarning)
 
+# some of this import may not be necessary - pulled from another file
 import os
 import os.path as op
 import sys
@@ -31,6 +32,7 @@ import functools
 from scipy.stats import zscore, trim_mean
 from mne.preprocessing import maxwell_filter
 from io import StringIO
+import pandas as pd
 
 # set commandline options
 if __name__=='__main__':
@@ -42,12 +44,15 @@ if __name__=='__main__':
     args = parser.parse_args()
     bids_root = args.bids_root
     bids_id = args.bids_id
+    os.chdir(bids_root)
 
 '''  TESTING Variables
 bids_root = '/fast2/BIDS'
 bids_id = 'ON02811'
 raw_fname = op.join(bids_root, f'sub-{bids_id}', 'ses-1','meg', f'sub-{bids_id}_ses-1_task-rest_run-01_meg.ds')
 bad_ch_names = ['MLO42', 'MZO03']
+
+bad_ch_names = {ON02811: ['MLO42', 'MZO03']}
 
 '''
 
@@ -75,33 +80,70 @@ fs_subject = 'sub-'+bids_id
 rest_taskname = 'rest'
 
 # setup logging
-global log_dir
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-buffer_logstream = StringIO('')
-ch = logging.StreamHandler(stream=buffer_logstream)
-logger.addHandler(ch)
+# global log_dir
+# logger = logging.getLogger()
+# logger.setLevel(logging.INFO)
+# buffer_logstream = StringIO('')
+# ch = logging.StreamHandler(stream=buffer_logstream)
+# logger.addHandler(ch)
 
 # Function to retrieve the subject/session specific logger
 
-def get_subj_logger(subjid, session, task, run, log_dir=None):
-     '''Return the subject specific logger.
-     This is particularly useful in the multiprocessing where logging is not
-     necessarily in order'''
-     fmt = '%(asctime)s :: %(levelname)s :: %(message)s'
-     sub_ses = f'{subjid}_ses_{session}_task_{task}_run_{run}'
-     subj_logger = logging.getLogger(sub_ses)
-     if subj_logger.handlers != []: # if not first time requested, use the file handler already defined
-         tmp_ = [type(i) for i in subj_logger.handlers ]
-         if logging.FileHandler in tmp_:
-             return subj_logger
-     else: # first time requested, add the file handler
-         fileHandle = logging.FileHandler(f'{log_dir}/{subjid}_ses-{session}_task-{task}_run-{run}_log.txt')
-         fileHandle.setLevel(logging.INFO)
-         fileHandle.setFormatter(logging.Formatter(fmt)) 
-         subj_logger.addHandler(fileHandle)
-         subj_logger.info('Initializing subject level enigma log')
-     return subj_logger   
+# def get_subj_logger(subjid, session, task, run, log_dir=None):
+#      '''Return the subject specific logger.
+#      This is particularly useful in the multiprocessing where logging is not
+#      necessarily in order'''
+#      fmt = '%(asctime)s :: %(levelname)s :: %(message)s'
+#      sub_ses = f'{subjid}_ses_{session}_task_{task}_run_{run}'
+#      subj_logger = logging.getLogger(sub_ses)
+#      if subj_logger.handlers != []: # if not first time requested, use the file handler already defined
+#          tmp_ = [type(i) for i in subj_logger.handlers ]
+#          if logging.FileHandler in tmp_:
+#              return subj_logger
+#      else: # first time requested, add the file handler
+#          fileHandle = logging.FileHandler(f'{log_dir}/{subjid}_ses-{session}_task-{task}_run-{run}_log.txt')
+#          fileHandle.setLevel(logging.INFO)
+#          fileHandle.setFormatter(logging.Formatter(fmt)) 
+#          subj_logger.addHandler(fileHandle)
+#          subj_logger.info('Initializing subject level enigma log')
+#      return subj_logger   
+
+
+def append_bad_ch_annot(raw, subjid):
+    '''Load the QA dataframe and get the bad channels
+    Load the subject specific BAD_segments csv file and write to the raw annotations'''
+    topdir = '~/src/NIH_MEG_Workshop_AdvancedTopics'
+    score_dframe = pd.read_csv(f'{topdir}/Day1_connectivity/artifact_scoring.csv', sep='\t')
+    score_dframe.rename({'Unnamed: 0': 'fname'}, axis=1, inplace=True)
+    
+    #Assign the subjids from the filename after cleanup
+    tmp_ = score_dframe.fname.str.split('/', expand=True)[0].values
+    tmp_ = [i.strip().replace("'","") for i in tmp_]    
+    score_dframe.subjid = tmp_
+    
+    #Drop duplicates
+    score_dframe = score_dframe.loc[~score_dframe.subjid.duplicated()]
+    _subjid = 'sub-'+subjid
+    _query = f'subjid=="{_subjid}"'
+    row = score_dframe.query(_query) 
+    if row.badchans.__len__() > 1:
+        raw.info['bads'] = row.badchans.values
+    elif not row.badchans.isna().values[0]:
+        if row.badchans.values[0]=='0':
+            pass  #just to make this function work
+        else:
+            raw.info['bads'] = row.badchans.values
+        
+    #Load the bad semgents info     
+    dframe_fname = op.join(os.getcwd(), 'BAD_segments', f'sub-{subjid}_bad.csv')
+    dframe = pd.read_csv(dframe_fname)
+    annot = mne.Annotations(onset=dframe.onset.values,
+                           duration=dframe.duration.values, 
+                           description=dframe.description.values,
+                           )
+    raw.set_annotations(annot)
+    return raw
+
 
 
 
@@ -110,8 +152,11 @@ raw_fname = op.join(bids_root, f'sub-{bids_id}', 'ses-01','meg', f'sub-{bids_id}
 raw = mne.io.read_raw_ctf(raw_fname, preload=True, system_clock='ignore', 
                           clean_names=True)
 
-if 'bad_ch_names' in locals():
-    raw.info['bads']  = bad_ch_names
+raw = append_bad_ch_annot(raw, bids_id)
+
+
+# if 'bad_ch_names' in locals():
+#     raw.info['bads']  = bad_ch_names
 
 raw.resample(sfreq, n_jobs=n_jobs)
 raw.notch_filter([60,120,180], n_jobs=n_jobs)
@@ -239,7 +284,12 @@ for epo_idx, stc in enumerate(stcs):
     roi_matrix[epo_idx, :, :] = stc._data[roi_idx_vector, :]
     
 np.save(f'/tmp/sub-{bids_id}.npy', roi_matrix)    
-
+labelnames = [i.name for i in labels]
+label_fname = '/tmp/label_ids.txt'
+with open(label_fname, 'w+') as f:
+    for idx,i in enumerate(labels):
+        f.write(f'{i.name}\n')
+        print(idx)
 
 
 
