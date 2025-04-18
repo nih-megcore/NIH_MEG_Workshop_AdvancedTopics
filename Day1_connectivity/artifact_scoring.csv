@@ -1,0 +1,130 @@
+	subjid	epochs	badchans	Quality (1<bad> - 5<good>)	Description	Resolution	Movement	DAQFlairing
+'sub-ON02747/ses-01/meg/sub-ON02747_ses-01_task-rest_run-01_meg.ds'	ON02747			2 (fixable)	DAQ flairing	Needs ICA		1
+ 'sub-ON02811/ses-01/meg/sub-ON02811_ses-01_task-rest_run-01_meg.ds'	ON02811		['MLO42', 'MZO03']	5				
+ 'sub-ON02811/ses-01/meg/sub-ON02811_ses-01_task-rest_run-02_meg.ds'	ON02811			Not Evalled (repeat)				
+ 'sub-ON03748/ses-01/meg/sub-ON03748_ses-01_task-rest_run-01_meg.ds'	ON03748			2	Muscle Artifact			
+ 'sub-ON05311/ses-01/meg/sub-ON05311_ses-01_task-rest_run-01_meg.ds'	ON05311			4	Slow Left Fronto/temporal drifts			
+ 'sub-ON05530/ses-01/meg/sub-ON05530_ses-01_task-rest_run-01_meg.ds'	ON05530		0	5	Some eyeblinks			
+ 'sub-ON06910/ses-01/meg/sub-ON06910_ses-01_task-rest_run-01_meg.ds'	ON06910			5	Some eyeblinks - looks very drowsy			
+ 'sub-ON08392/ses-01/meg/sub-ON08392_ses-01_task-rest_run-01_meg.ds'	ON08392		0	2 (fixable)	DAQ flairing	Needs ICA		1
+ 'sub-ON08643/ses-01/meg/sub-ON08643_ses-01_task-rest_run-01_meg.ds'	ON08643		['MRO11']	4	Low amplitude			
+ 'sub-ON08710/ses-1/meg/sub-ON08710_ses-1_task-rest_run-01_meg.ds'	ON08710	2 (weird start and end)	0	3.5	Low amplitude – general noise, but ok			
+ 'sub-ON08792/ses-01/meg/sub-ON08792_ses-01_task-rest_run-01_meg.ds'	ON08792			5	Looks drowsy			
+ 'sub-ON09540/ses-1/meg/sub-ON09540_ses-1_task-rest_run-01_meg.ds'	ON09540			4.5	Some weird low freq stuff (looks physio) – some blinks			
+ 'sub-ON09760/ses-1/meg/sub-ON09760_ses-1_task-rest_run-01_meg.ds'	ON09760	10	0	3	Low freq artifact – some muscle art			
+ 'sub-ON09766/ses-1/meg/sub-ON09766_ses-1_task-rest_run-01_meg.ds'	ON09766	4	0	4.5	A few muscle arts that are set as bad			
+ 'sub-ON10965/ses-01/meg/sub-ON10965_ses-01_task-rest_run-01_meg.ds'	ON10965	5		4	Some initial eyeblinks and low freq - a few muscles that were removed			
+ 'sub-ON11394/ses-01/meg/sub-ON11394_ses-01_task-rest_run-01_meg.ds'	ON11394	4	0	4	DAQ flairing (low amplitude - removed through badepo) / could be fixed			1
+ 'sub-ON12688/ses-01/meg/sub-ON12688_ses-01_task-rest_run-01_meg.ds'	ON12688	8	['MRP44']	4	DAQ flairing (low amplitude - removed through badepo) / could be fixed			1
+ 'sub-ON13545/ses-01/meg/sub-ON13545_ses-01_task-rest_run-01_meg.ds'	ON13545			4	Frontal is low amplitude – could be placement in the sensor			
+ 'sub-ON13986/ses-01/meg/sub-ON13986_ses-01_task-rest_run-01_meg.ds'	ON13986		['MRC54']	4	Low frequency art			
+ 'sub-ON21976/ses-01/meg/sub-ON21976_ses-01_task-rest_run-01_meg.ds'	ON21976		['MRP41']	2.5	Low frequency art / dental -- otherwise good (maybe possible cleanup case)			
+ 'sub-ON22671/ses-01/meg/sub-ON22671_ses-01_task-rest_run-01_meg.ds'	ON22671			2 (fixable)	DAQ flairing	Some mild low frequency		1
+ 'sub-ON23483/ses-01/meg/sub-ON23483_ses-01_task-rest_run-01_meg.ds'	ON23483	3		3	Low freq art (intermittent – possibly removed in epochs)			
+ 'sub-ON25658/ses-01/meg/sub-ON25658_ses-01_task-rest_run-01_meg.ds'	ON25658	9		3 (improvable)	DAQ flairing (low amp – removed) + low freq art			1
+ 'sub-ON25939/ses-01/meg/sub-ON25939_ses-01_task-rest_run-01_meg.ds'	ON25939	5		3.5	Eye or low freq fronto/temporal			
+ 'sub-ON26105/ses-1/meg/sub-ON26105_ses-1_task-rest_run-01_meg.ds'	ON26105			4	Some minor slow frontal			
+ 'sub-ON26309/ses-01/meg/sub-ON26309_ses-01_task-rest_run-01_meg.ds'	ON26309	6		4	DAQ flairing (removed)			1
+ 'sub-ON28693/ses-01/meg/sub-ON28693_ses-01_task-rest_run-01_meg.ds'	ON28693	2		2	A lot of dental artifact			
+ 'sub-ON33221/ses-1/meg/sub-ON33221_ses-1_task-rest_run-01_meg.ds'	ON33221	4		5	Some intermittent muscle (marked bad)			
+ 'sub-ON33827/ses-01/meg/sub-ON33827_ses-01_task-rest_run-01_meg.ds'	ON33827	3		5	Very minor muscle marked			
+ 'sub-ON39099/ses-01/meg/sub-ON39099_ses-01_task-rest_run-01_meg.ds'	ON39099	7	['MLT36']	3.5	Long duration weird artifact			
+ 'sub-ON40397/ses-01/meg/sub-ON40397_ses-01_task-rest_run-01_meg.ds'	ON40397	3		5				
+ 'sub-ON41090/ses-01/meg/sub-ON41090_ses-01_task-rest_run-01_meg.ds'	ON41090	4		4.5	Some muscle (cleaned)			
+ 'sub-ON42107/ses-01/meg/sub-ON42107_ses-01_task-rest_run-01_meg.ds'	ON42107	0	0	5	Some occipital low freq			
+ 'sub-ON43016/ses-01/meg/sub-ON43016_ses-01_task-rest_run-01_meg.ds'	ON43016	1		4	Some fronto temporal low freq			
+ 'sub-ON43210/ses-1/meg/sub-ON43210_ses-1_task-rest_run-01_meg.ds'	ON43210	4		3	Persistent muscle artifact (several minutes long)			
+ 'sub-ON43585/ses-01/meg/sub-ON43585_ses-01_task-rest_run-01_meg.ds'	ON43585	3		5	Minor muscle			
+ 'sub-ON47254/ses-01/meg/sub-ON47254_ses-01_task-rest_run-01_meg.ds'	ON47254			2 (fixable)	DAQ flairing			1
+ 'sub-ON48555/ses-01/meg/sub-ON48555_ses-01_task-rest_run-01_meg.ds'	ON48555	2		5	Some minor eye low freq			
+ 'sub-ON48925/ses-01/meg/sub-ON48925_ses-01_task-rest_run-01_meg.ds'	ON48925	2		5	Minor spike squiggle			
+ 'sub-ON49080/ses-01/meg/sub-ON49080_ses-01_task-rest_run-01_meg.ds'	ON49080	0		4	Low freq temporal art			
+ 'sub-ON50015/ses-01/meg/sub-ON50015_ses-01_task-rest_run-01_meg.ds'	ON50015	3		4.5	Spike Squiggles 			
+ 'sub-ON51111/ses-1/meg/sub-ON51111_ses-1_task-rest_run-01_meg.ds'	ON51111	1		5	Weird section of spikes spread across channels			
+ 'sub-ON52083/ses-01/meg/sub-ON52083_ses-01_task-rest_run-01_meg.ds'	ON52083	2		4.5	Intermittent occipital and temporal low freq (movement) - 1 burst of removed frontal muscle			
+ 'sub-ON52220/ses-1/meg/sub-ON52220_ses-1_task-rest_run-01_meg.ds'	'’			4.5	Beginning weird			
+ 'sub-ON52662/ses-01/meg/sub-ON52662_ses-01_task-rest_run-01_meg.ds'	ON52662	0		5	Possibly drowsy			
+ 'sub-ON54268/ses-01/meg/sub-ON54268_ses-01_task-rest_run-01_meg.ds'	ON54268	27		3	Lots of intermittent muscle/ eye clench – Pop muscle and continuous			
+ 'sub-ON56044/ses-01/meg/sub-ON56044_ses-01_task-rest_run-01_meg.ds'	ON56044	1		5	Clean data – awake			
+ 'sub-ON56250/ses-01/meg/sub-ON56250_ses-01_task-rest_run-01_meg.ds'	ON56250	8		3.5	DAQ flairing + inferior low frequency (temporal / occipital)			1
+ 'sub-ON61373/ses-01/meg/sub-ON61373_ses-01_task-rest_run-01_meg.ds'	ON61373	2		4.5				
+ 'sub-ON62003/ses-01/meg/sub-ON62003_ses-01_task-rest_run-01_meg.ds'	ON62003		['MRO11']	4.5	Some occipital muscle			
+ 'sub-ON62200/ses-1/meg/sub-ON62200_ses-1_task-rest_run-01_meg.ds'	ON62200	8		5	Some small spikes (DAQ flair (?) minimal)			
+ 'sub-ON63221/ses-1/meg/sub-ON63221_ses-1_task-rest_run-01_meg.ds'	ON63221			2	Substantial DAQ flairing + Dental Artifact  (worth trying to see if recoverable)			1
+ 'sub-ON63734/ses-01/meg/sub-ON63734_ses-01_task-rest_run-01_meg.ds'	ON63734	2		5				
+ 'sub-ON66199/ses-01/meg/sub-ON66199_ses-01_task-rest_run-01_meg.ds'	ON66199	18		3.5	Occipital slow artifact (no harmonic) + lots of small spike pops + 1 major muscle artifact that is cleaned			
+ 'sub-ON67270/ses-01/meg/sub-ON67270_ses-01_task-rest_run-01_meg.ds'	ON67270	2		3	Fronto-temporal artifact slow (probably dental)			
+ 'sub-ON68840/ses-01/meg/sub-ON68840_ses-01_task-rest_run-01_meg.ds'	ON68840	2	['MRO11']	4.5	Minor Muscle Artifact (successfully cut from epochs)			
+ 'sub-ON69163/ses-01/meg/sub-ON69163_ses-01_task-rest_run-01_meg.ds'	ON69163	6		5	Some muscle tension associated with eye squinting			
+ 'sub-ON70467/ses-01/meg/sub-ON70467_ses-01_task-rest_run-01_meg.ds'	ON70467	0		5	**Super clean and good neurophys			
+ 'sub-ON72082/ses-01/meg/sub-ON72082_ses-01_task-rest_run-01_meg.ds'	ON72082	1		5	Not the highest SNR, because of moderate signal amplitude (don’t want to penalize for smaller heads)			
+ 'sub-ON72409/ses-01/meg/sub-ON72409_ses-01_task-rest_run-01_meg.ds'	ON72409	4		5	Some clipped low amplitude muscle			
+ 'sub-ON73200/ses-1/meg/sub-ON73200_ses-1_task-rest_run-01_meg.ds'	ON73200	5		4 (eyes open?)	Is this eyes open – maybe 50 blinks during run - some muscle tension removed			
+ 'sub-ON73969/ses-01/meg/sub-ON73969_ses-01_task-rest_run-01_meg.ds'	ON73969	7		4	Some intermixed muscle – good signal and generally clean			
+ 'sub-ON75100/ses-1/meg/sub-ON75100_ses-1_task-rest_run-01_meg.ds'	ON75100	1		5	**Super clean and good neurophys  (1  muscle artifact removed -- 1 or 2 instances of eye movement left in)			
+ 'sub-ON76144/ses-1/meg/sub-ON76144_ses-1_task-rest_run-01_meg.ds'	ON76144	0		5	**Super clean and good neurophys : No muscle – a few eye movements and jaw adjustment			
+ 'sub-ON76320/ses-1/meg/sub-ON76320_ses-1_task-rest_run-01_meg.ds'	ON76320	6		5	DAQ flairing - cleaned up by epoch rejection - ICA may clean fully without rej epochs			1
+ 'sub-ON76525/ses-1/meg/sub-ON76525_ses-1_task-rest_run-01_meg.ds'	ON76525	1		3.5	Low freq front-temporal (0.5hz-1) artifact  -- Cleans nicely with 1hz filter			
+ 'sub-ON76625/ses-1/meg/sub-ON76625_ses-1_task-rest_run-01_meg.ds'	ON76625	4		4	Offset/Onset ringing - low amplitude - some small low frequency - small spike pops			
+ 'sub-ON77753/ses-1/meg/sub-ON77753_ses-1_task-rest_run-01_meg.ds'	ON77753	5		4.5	DAQ flairing + eye movement (not removed) + offset/onset buzz + 1 muscle removed			1
+ 'sub-ON80038/ses-01/meg/sub-ON80038_ses-01_task-rest_run-01_meg.ds'	ON80038	0		4	Persistent low amplitude fronto-temporal spiking (jaw/forehead muscle tension?)			
+ 'sub-ON81734/ses-01/meg/sub-ON81734_ses-01_task-rest_run-01_meg.ds'	ON81734	1		4.5	DAQ flairing (removed by epoch)			1
+ 'sub-ON82386/ses-01/meg/sub-ON82386_ses-01_task-rest_run-01_meg.ds'	ON82386	1		4.5	Low amplitude frontal central slow + 1 removed muscle			
+ 'sub-ON83320/ses-1/meg/sub-ON83320_ses-1_task-rest_run-01_meg.ds'	ON83320	5		5	DAQ flairing (removed)			1
+ 'sub-ON84201/ses-1/meg/sub-ON84201_ses-1_task-rest_run-01_meg.ds'	ON84201	5		4.5	OOS error (crops 40% of data) + a few removed muscle clenches			
+ 'sub-ON84651/ses-01/meg/sub-ON84651_ses-01_task-rest_run-01_meg.ds'	ON84651	14		4.5	Moderate number of Muscle Artifacts (clipped) - moderate amplitude neuro + low noise			
+ 'sub-ON84896/ses-01/meg/sub-ON84896_ses-01_task-rest_run-01_meg.ds'	ON84896	0		3	Left dominant fronto temporal period (non-sinusoidal) artifact - otherwise low noise			
+ 'sub-ON85010/ses-1/meg/sub-ON85010_ses-1_task-rest_run-01_meg.ds'	ON85010	7		4.5	Onset Ringing + DAQ flairing			1
+ 'sub-ON85301/ses-1/meg/sub-ON85301_ses-1_task-rest_run-01_meg.ds'	ON85301	10		4	Fairly continuous Temporal muscle artifact + DAQ flairing			
+ 'sub-ON85305/ses-01/meg/sub-ON85305_ses-01_task-rest_run-01_meg.ds'	ON85305	0	['MLT36']	4.5	Very low freq/amp frontal only artifact + rtemporal channels noise non-stationarity			
+ 'sub-ON85400/ses-1/meg/sub-ON85400_ses-1_task-rest_run-01_meg.ds'	ON85400	9		4	Beginnning/Ending ringing + Some temporal noise + a few muscle contractions + 1 possible DAQ flairing of moderate size			1
+ 'sub-ON85514/ses-1/meg/sub-ON85514_ses-1_task-rest_run-01_meg.ds'	ON85514	5	['MRF11']	5	Beginning/Ending ringing + two minor low amplitude step jumps on a few chans			
+ 'sub-ON85616/ses-01/meg/sub-ON85616_ses-01_task-rest_run-01_meg.ds'	ON85616	3		5	DAQ flairing (cropped, but should be ICAed out) - lost a lot of data			1
+ 'sub-ON86202/ses-01/meg/sub-ON86202_ses-01_task-rest_run-01_meg.ds'	ON86202	1		5	Clean data – 1 muscle artifact - some  mild frontotemporal slow, seems like normal activity			
+ 'sub-ON87304/ses-1/meg/sub-ON87304_ses-1_task-rest_run-01_meg.ds'	ON87304	2		4.5	Clean data – low amplitude			
+ 'sub-ON87304/ses-1/meg/sub-ON87304_ses-1_task-rest_run-02_meg.ds'	'’			4.5	BAD start/end - Clean but low amplitude frontal and top of head			
+ 'sub-ON87550/ses-1/meg/sub-ON87550_ses-1_task-rest_run-01_meg.ds'	ON87550			4.5	BAD start – Some eyeblinks with muscle removed. Mild additional temporal noise – but not fluctuating			
+ 'sub-ON87616/ses-1/meg/sub-ON87616_ses-1_task-rest_run-01_meg.ds'	ON87616	2		3	Low freq whole head periodic slow waves (maybe chest/head rotation) - Low amplitude cortical - signal possibly recoverable			
+ 'sub-ON87631/ses-1/meg/sub-ON87631_ses-1_task-rest_run-01_meg.ds'	ON87631	3		5	DAQ flairing (2x) – low amplitude burst of 10s dur - nice temporal delta (appears to be physio)			1
+ 'sub-ON87642/ses-1/meg/sub-ON87642_ses-1_task-rest_run-01_meg.ds'	ON87642	0		4	Beginning/End Ringing – Persistent Fronto-temporal noise(possible tension / possilby machine) - Noise level doesn’t change over time - no muscle contraction			
+ 'sub-ON87655/ses-1/meg/sub-ON87655_ses-1_task-rest_run-01_meg.ds'	ON87655	3		3.5	General persistent temporal and frontal muscle tension with 3 major jaw clenches (removed) - no major dental artifact or slow			
+ 'sub-ON87743/ses-1/meg/sub-ON87743_ses-1_task-rest_run-01_meg.ds'	ON87743	10		3.5	DAQ flairing (multiple 10sec flairs) + muscle artifact.  Could possibly get to a 4 with ICA 			1
+ 'sub-ON87777/ses-1/meg/sub-ON87777_ses-1_task-rest_run-01_meg.ds'	ON87777	9		3.5	DAQ flairing (few channels - but long duration) + some is co-occuring with muscle. Could be 4 afterwards			1
+ 'sub-ON88614/ses-01/meg/sub-ON88614_ses-01_task-rest_run-01_meg.ds'	ON88614	15		4	DAQ flairing (low amp – removed) + cropped a lot of data - could be 4.5 after ICA			1
+ 'sub-ON88700/ses-1/meg/sub-ON88700_ses-1_task-rest_run-01_meg.ds'	ON88700	4		4	DAQ flairing + some temporal lobe muscle artifact			1
+ 'sub-ON88753/ses-1/meg/sub-ON88753_ses-1_task-rest_run-01_meg.ds'	ON88753	8		5	DAQ flairing (4x removed epochs)			1
+ 'sub-ON88762/ses-1/meg/sub-ON88762_ses-1_task-rest_run-01_meg.ds'	ON88762	2		4.5	Begin/End ringing			
+ 'sub-ON89045/ses-01/meg/sub-ON89045_ses-01_task-rest_run-01_meg.ds'	ON89045	3		5	Small spikes (3x) maybe not even worth removing			
+ 'sub-ON89474/ses-01/meg/sub-ON89474_ses-01_task-rest_run-01_meg.ds'	ON89474	0		2.5	Low frequency temporo-occipital (+ other) artifact - low amplitude signal			
+ 'sub-ON89475/ses-01/meg/sub-ON89475_ses-01_task-rest_run-01_meg.ds'	ON89475	0		4	Some persistent fronto temporal noise (muscle tension? good data otherwise)			
+ 'sub-ON91906/ses-01/meg/sub-ON91906_ses-01_task-rest_run-01_meg.ds'	ON91906	2		5	DAQ flairing + Some eyeblinks			1
+ 'sub-ON92220/ses-1/meg/sub-ON92220_ses-1_task-rest_run-01_meg.ds'	ON92220	5	['MRT45']	5	Removed muscle clenchs			
+ 'sub-ON93222/ses-1/meg/sub-ON93222_ses-1_task-rest_run-01_meg.ds'	ON93222	0		4	Some low frequency atrifact, but generally clean			
+ 'sub-ON93426/ses-01/meg/sub-ON93426_ses-01_task-rest_run-01_meg.ds'	ON93426	1			1 Section of low amplitude broadband temporal noise (10s)			
+ 'sub-ON94110/ses-1/meg/sub-ON94110_ses-1_task-rest_run-01_meg.ds'	STOPPED HERE – NEED TO DO THIS SUBJECT and below							
+ 'sub-ON94131/ses-1/meg/sub-ON94131_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON94856/ses-01/meg/sub-ON94856_ses-01_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON95003/ses-01/meg/sub-ON95003_ses-01_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON95422/ses-01/meg/sub-ON95422_ses-01_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON95520/ses-1/meg/sub-ON95520_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON95742/ses-01/meg/sub-ON95742_ses-01_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON96252/ses-1/meg/sub-ON96252_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON96353/ses-1/meg/sub-ON96353_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON96510/ses-1/meg/sub-ON96510_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON96555/ses-1/meg/sub-ON96555_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON97503/ses-1/meg/sub-ON97503_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON97504/ses-01/meg/sub-ON97504_ses-01_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON97654/ses-1/meg/sub-ON97654_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON97765/ses-1/meg/sub-ON97765_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON98130/ses-1/meg/sub-ON98130_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON98362/ses-1/meg/sub-ON98362_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON98502/ses-1/meg/sub-ON98502_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON98602/ses-1/meg/sub-ON98602_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON98664/ses-1/meg/sub-ON98664_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON98745/ses-1/meg/sub-ON98745_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON98826/ses-1/meg/sub-ON98826_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON99547/ses-1/meg/sub-ON99547_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON99620/ses-01/meg/sub-ON99620_ses-01_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON99633/ses-1/meg/sub-ON99633_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON99881/ses-1/meg/sub-ON99881_ses-1_task-rest_run-01_meg.ds'	'’							
+ 'sub-ON99943/ses-1/meg/sub-ON99943_ses-1_task-rest_run-01_meg.ds'	'’							
