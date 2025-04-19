@@ -20,7 +20,6 @@ import glob
 import numpy as np
 import pandas as pd
 import logging
-import munch 
 import subprocess
 import mne_bids
 from mne_bids import get_head_mri_trans
@@ -61,7 +60,7 @@ fmin = 0.5
 fmax = 100
 sfreq = 600
 epoch_len = 5.0
-n_jobs=20
+n_jobs=8
 
 # parameters for rejecting bad epochs
 magthresh = 5000e-15
@@ -108,11 +107,19 @@ rest_taskname = 'rest'
 #          subj_logger.info('Initializing subject level enigma log')
 #      return subj_logger   
 
+def _handle_csv_list(entry):
+    if type(entry)!=str:
+        return None 
+    if '[' in entry:
+        _tmp = entry.replace('[','').replace(']','').replace("'","").replace(' ','').split(',')
+        return _tmp
+    else: 
+        return [entry]
 
 def append_bad_ch_annot(raw, subjid):
     '''Load the QA dataframe and get the bad channels
     Load the subject specific BAD_segments csv file and write to the raw annotations'''
-    topdir = '~/src/NIH_MEG_Workshop_AdvancedTopics'
+    topdir = op.dirname(op.dirname(__file__)) #, '~/src/NIH_MEG_Workshop_AdvancedTopics'
     score_dframe = pd.read_csv(f'{topdir}/Day1_connectivity/artifact_scoring.csv', sep='\t')
     score_dframe.rename({'Unnamed: 0': 'fname'}, axis=1, inplace=True)
     
@@ -126,13 +133,18 @@ def append_bad_ch_annot(raw, subjid):
     _subjid = 'sub-'+subjid
     _query = f'subjid=="{_subjid}"'
     row = score_dframe.query(_query) 
-    if row.badchans.__len__() > 1:
-        raw.info['bads'] = row.badchans.values
+    print(row.badchans.values[0])
+    _val = _handle_csv_list(row.badchans.values[0])
+    print(_val)
+    if _val==None:
+        pass
+    elif _val.__len__() > 1:
+        raw.info['bads'] = _val
     elif not row.badchans.isna().values[0]:
         if row.badchans.values[0]=='0':
             pass  #just to make this function work
         else:
-            raw.info['bads'] = row.badchans.values
+            raw.info['bads'] = _val
         
     #Load the bad semgents info     
     dframe_fname = op.join(os.getcwd(), 'BAD_segments', f'sub-{subjid}_bad.csv')
@@ -186,15 +198,16 @@ data_cov = mne.compute_covariance(epochs)
 bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='meg',
                      task=rest_taskname, session ='01', run = '01')
 anat_bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='anat',
-                          extension='.nii.gz', acquisition = 'mprage', suffix = 'T1w', session = '01', run='01')
+                          extension='.nii.gz', acquisition = 'MPRAGE', suffix = 'T1w', session = '01')
 raw_fname = bids_path.copy() 
 if not raw_fname.fpath.exists():
     bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='meg',
                          task=rest_taskname, session ='1', run = '01')
     anat_bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='anat',
-                              extension='.nii.gz', acquisition = 'mprage', suffix = 'T1w', session = '1', run='01')
+                              extension='.nii.gz', acquisition = 'MPRAGE', suffix = 'T1w', session = '1')
     raw_fname = bids_path.copy() #.update(run = '1', session = '01')
 
+print(anat_bids_path.fpath)
 assert raw_fname.fpath.exists()
 if not anat_bids_path.fpath.exists():
     anat_bids_path.update(acquisition=None)
@@ -310,13 +323,13 @@ roi_matrix = np.zeros([len(stcs), roi_len, template_stc.shape[-1]])
 for epo_idx, stc in enumerate(stcs):
     roi_matrix[epo_idx, :, :] = stc._data[roi_idx_vector, :]
     
-np.save(f'/tmp/sub-{bids_id}.npy', roi_matrix)    
+np.save(f'{os.getcwd()}/OUTPUTS/sub-{bids_id}.npy', roi_matrix)    
 labelnames = [i.name for i in labels]
-label_fname = '/tmp/label_ids.txt'
+label_fname = f'{os.getcwd()}/OUTPUTS/sub-{bids_id}_label_ids.txt'
 with open(label_fname, 'w+') as f:
     for idx,i in enumerate(labels):
         f.write(f'{i.name}\n')
         print(idx)
-
-
-
+print('\n\n')
+print('!!!!!!!!! FINISHED !!!!!!!!!!!!!!!!')
+print('\n\n')
