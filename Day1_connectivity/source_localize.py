@@ -39,10 +39,12 @@ if __name__=='__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-bids_root')
     parser.add_argument('-bids_id')
+    parser.add_argument('-batch_hv2', default=False, action='store_true')
     
     args = parser.parse_args()
     bids_root = args.bids_root
     bids_id = args.bids_id
+    batch2 = args.batch_hv2
     os.chdir(bids_root)
 
 '''  TESTING Variables
@@ -197,7 +199,11 @@ data_cov = mne.compute_covariance(epochs)
 #%% MRI section
 bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='meg',
                      task=rest_taskname, session ='01', run = '01')
-anat_bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='anat',
+if batch2: 
+    anat_bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='anat',
+                          extension='.nii.gz', suffix = 'T1w')
+else: 
+    anat_bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='anat',
                           extension='.nii.gz', acquisition = 'MPRAGE', suffix = 'T1w', session = '01')
 raw_fname = bids_path.copy() 
 if not raw_fname.fpath.exists():
