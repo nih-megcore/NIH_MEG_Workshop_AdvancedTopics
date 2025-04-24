@@ -40,26 +40,33 @@ if __name__=='__main__':
     parser.add_argument('-bids_root')
     parser.add_argument('-bids_id')
     parser.add_argument('-batch_hv2', default=False, action='store_true')
+    parser.add_argument('-fmin',help='Low frequency cutoff for highpass filter', 
+                        default=0.5, type=float)
+    parser.add_argument('-fmax',help='High frequency cutoff for lowpass filter', 
+                        default=None, type=float)
+    parser.add_argument('-reg', help='Beamformer regularization', 
+                        default=0.05, type=float)
+    
     
     args = parser.parse_args()
     bids_root = args.bids_root
     bids_id = args.bids_id
     batch2 = args.batch_hv2
+    fmin=args.fmin
+    fmax=args.fmax
+    beam_reg = args.reg
     os.chdir(bids_root)
 
 '''  TESTING Variables
 bids_root = '/fast2/BIDS'
 bids_id = 'ON02811'
 raw_fname = op.join(bids_root, f'sub-{bids_id}', 'ses-1','meg', f'sub-{bids_id}_ses-1_task-rest_run-01_meg.ds')
-bad_ch_names = ['MLO42', 'MZO03']
-
-bad_ch_names = {ON02811: ['MLO42', 'MZO03']}
-
+fmin=15
+fmax=35
+beam_reg=0.01
 '''
 
 # define some variables
-fmin = 0.5
-fmax = 100
 sfreq = 600
 epoch_len = 5.0
 n_jobs=8
@@ -70,8 +77,6 @@ flatmagthresh = 10e-15
 flatgradthresh = 10e-13
 std_thresh = 15
 
-# beamformer parameters 
-beam_reg = 0.01
 
 # data layout
 deriv_dir = op.join(bids_root, 'derivatives')
@@ -80,34 +85,8 @@ project_dir = op.join(deriv_dir, 'MEG_adv_topics_conn')
 fs_subject = 'sub-'+bids_id
 rest_taskname = 'rest'
 
-# setup logging
-# global log_dir
-# logger = logging.getLogger()
-# logger.setLevel(logging.INFO)
-# buffer_logstream = StringIO('')
-# ch = logging.StreamHandler(stream=buffer_logstream)
-# logger.addHandler(ch)
-
-# Function to retrieve the subject/session specific logger
-
-# def get_subj_logger(subjid, session, task, run, log_dir=None):
-#      '''Return the subject specific logger.
-#      This is particularly useful in the multiprocessing where logging is not
-#      necessarily in order'''
-#      fmt = '%(asctime)s :: %(levelname)s :: %(message)s'
-#      sub_ses = f'{subjid}_ses_{session}_task_{task}_run_{run}'
-#      subj_logger = logging.getLogger(sub_ses)
-#      if subj_logger.handlers != []: # if not first time requested, use the file handler already defined
-#          tmp_ = [type(i) for i in subj_logger.handlers ]
-#          if logging.FileHandler in tmp_:
-#              return subj_logger
-#      else: # first time requested, add the file handler
-#          fileHandle = logging.FileHandler(f'{log_dir}/{subjid}_ses-{session}_task-{task}_run-{run}_log.txt')
-#          fileHandle.setLevel(logging.INFO)
-#          fileHandle.setFormatter(logging.Formatter(fmt)) 
-#          subj_logger.addHandler(fileHandle)
-#          subj_logger.info('Initializing subject level enigma log')
-#      return subj_logger   
+output_dir = op.join(deriv_dir, 'beamformer_testing', f'beam_f{fmin}-{fmax}_reg-{beam_reg}')
+if not op.exists(output_dir): os.makedirs(output_dir)
 
 def _handle_csv_list(entry):
     if type(entry)!=str:
@@ -162,8 +141,6 @@ def append_bad_ch_annot(raw, subjid):
     return raw
 
 
-
-
 #%%
 if op.exists(f'sub-{bids_id}/ses-01'):
     raw_fname = op.join(bids_root, f'sub-{bids_id}', 'ses-01','meg', f'sub-{bids_id}_ses-01_task-rest_run-01_meg.ds')
@@ -179,17 +156,19 @@ raw = append_bad_ch_annot(raw, bids_id)
 # if 'bad_ch_names' in locals():
 #     raw.info['bads']  = bad_ch_names
 
+
 raw.resample(sfreq, n_jobs=n_jobs)
 raw.notch_filter([60,120,180], n_jobs=n_jobs)
-raw.filter(fmin, fmax, n_jobs=n_jobs)
+raw.filter(0.5, None, n_jobs=n_jobs)  #Set wideband filter for epoch drops based on amplitude
 
 tmax = epoch_len    
 evts = mne.make_fixed_length_events(raw, duration=epoch_len)
 reject_dict = dict(mag=5e-12)
 epochs = mne.Epochs(raw, evts, reject=reject_dict, #flat=flat_dict,
                 preload=True, baseline=None, tmin=0, tmax=tmax)
+epochs.filter(fmin, fmax, n_jobs=n_jobs)
 
-data_cov = mne.compute_covariance(epochs)
+data_cov = mne.compute_covariance(epochs, method='shrunk', cv=4, n_jobs=n_jobs)
 
 
 
@@ -199,19 +178,16 @@ data_cov = mne.compute_covariance(epochs)
 #%% MRI section
 bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='meg',
                      task=rest_taskname, session ='01', run = '01')
-if batch2: 
-    anat_bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='anat',
-                          extension='.nii.gz', suffix = 'T1w')
-else: 
-    anat_bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='anat',
-                          extension='.nii.gz', acquisition = 'MPRAGE', suffix = 'T1w', session = '01')
+
+mri_search = glob.glob(f'sub-{bids_id}*/**/*run-01_T1w.nii.gz', recursive=True)+glob.glob(f'sub-{bids_id}*/**/*ses-1_T1w.nii.gz', recursive=True)
+mri_search = mri_search[0]
+anat_bids_path = mne_bids.get_bids_path_from_fname(mri_search)
+
 raw_fname = bids_path.copy() 
 if not raw_fname.fpath.exists():
     bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='meg',
                          task=rest_taskname, session ='1', run = '01')
-    anat_bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='anat',
-                              extension='.nii.gz', acquisition = 'MPRAGE', suffix = 'T1w', session = '1')
-    raw_fname = bids_path.copy() #.update(run = '1', session = '01')
+    raw_fname = bids_path.copy() 
 
 print(anat_bids_path.fpath)
 assert raw_fname.fpath.exists()
@@ -269,7 +245,7 @@ else:
 # epochs.pick_types(meg=True, ref_meg=False)
 
 filters = make_lcmv(epochs.info, fwd, data_cov, #noise_cov=noise_cov, 
-                    reg=0.01, pick_ori='max-power') #rank=epo_rank, pick_ori='max-power') 
+                    reg=beam_reg, pick_ori='max-power') #rank=epo_rank, pick_ori='max-power') 
 
 stcs = apply_lcmv_epochs(epochs=epochs, filters=filters, return_generator=False)  
 
@@ -329,9 +305,9 @@ roi_matrix = np.zeros([len(stcs), roi_len, template_stc.shape[-1]])
 for epo_idx, stc in enumerate(stcs):
     roi_matrix[epo_idx, :, :] = stc._data[roi_idx_vector, :]
     
-np.save(f'{os.getcwd()}/OUTPUTS/sub-{bids_id}.npy', roi_matrix)    
+np.save(f'{output_dir}/sub-{bids_id}.npy', roi_matrix)    
 labelnames = [i.name for i in labels]
-label_fname = f'{os.getcwd()}/OUTPUTS/sub-{bids_id}_label_ids.txt'
+label_fname = f'{output_dir}/sub-{bids_id}_label_ids.txt'
 with open(label_fname, 'w+') as f:
     for idx,i in enumerate(labels):
         f.write(f'{i.name}\n')
