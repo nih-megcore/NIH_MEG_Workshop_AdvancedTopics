@@ -182,7 +182,7 @@ data_cov = mne.compute_covariance(epochs, method='empirical')
 bids_path = BIDSPath(root=bids_root, subject=bids_id, datatype='meg',
                      task=rest_taskname, session ='01', run = '01')
 
-mri_search = glob.glob(f'sub-{bids_id}*/**/*run-01_T1w.nii.gz', recursive=True)+glob.glob(f'sub-{bids_id}*/**/*ses-1_T1w.nii.gz', recursive=True)
+mri_search = glob.glob(f'sub-{bids_id}*/**/*T1w.nii.gz', recursive=True) #+glob.glob(f'sub-{bids_id}*/**/*ses-1_T1w.nii.gz', recursive=True)
 mri_search = mri_search[0]
 anat_bids_path = mne_bids.get_bids_path_from_fname(mri_search)
 
