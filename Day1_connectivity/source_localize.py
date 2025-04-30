@@ -41,7 +41,7 @@ if __name__=='__main__':
     parser.add_argument('-bids_id')
     parser.add_argument('-batch_hv2', default=False, action='store_true')
     parser.add_argument('-fmin',help='Low frequency cutoff for highpass filter', 
-                        default=0.5, type=float)
+                        default=None, type=float)
     parser.add_argument('-fmax',help='High frequency cutoff for lowpass filter', 
                         default=None, type=float)
     parser.add_argument('-reg', help='Beamformer regularization', 
@@ -85,7 +85,10 @@ project_dir = op.join(deriv_dir, 'MEG_adv_topics_conn')
 fs_subject = 'sub-'+bids_id
 rest_taskname = 'rest'
 
-output_dir = op.join(deriv_dir, 'beamformer_testing', f'beam_f{fmin}-{fmax}_reg-{beam_reg}')
+if (fmin!=None) and (fmax!=None):
+    output_dir = op.join(deriv_dir, 'beamformer_testing', f'beam_f{fmin}-{fmax}_reg-{beam_reg}')
+else:
+    output_dir = op.join(deriv_dir, 'beamformer_testing', f'beam_reg-{beam_reg}')
 if not op.exists(output_dir): os.makedirs(output_dir)
 
 def _handle_csv_list(entry):
@@ -100,7 +103,8 @@ def _handle_csv_list(entry):
 def append_bad_ch_annot(raw, subjid):
     '''Load the QA dataframe and get the bad channels
     Load the subject specific BAD_segments csv file and write to the raw annotations'''
-    topdir = op.dirname(op.dirname(__file__)) #, '~/src/NIH_MEG_Workshop_AdvancedTopics'
+    # topdir = '~/src/NIH_MEG_Workshop_AdvancedTopics'
+    topdir = op.dirname(op.dirname(__file__)) 
     score_dframe = pd.read_csv(f'{topdir}/Day1_connectivity/artifact_scoring.csv', sep='\t')
     score_dframe.rename({'Unnamed: 0': 'fname'}, axis=1, inplace=True)
     
@@ -153,10 +157,6 @@ raw = mne.io.read_raw_ctf(raw_fname, preload=True, system_clock='ignore',
 raw = append_bad_ch_annot(raw, bids_id)
 
 
-# if 'bad_ch_names' in locals():
-#     raw.info['bads']  = bad_ch_names
-
-
 raw.resample(sfreq, n_jobs=n_jobs)
 raw.notch_filter([60,120,180], n_jobs=n_jobs)
 raw.filter(0.5, None, n_jobs=n_jobs)  #Set wideband filter for epoch drops based on amplitude
@@ -166,9 +166,12 @@ evts = mne.make_fixed_length_events(raw, duration=epoch_len)
 reject_dict = dict(mag=5e-12)
 epochs = mne.Epochs(raw, evts, reject=reject_dict, #flat=flat_dict,
                 preload=True, baseline=None, tmin=0, tmax=tmax)
-epochs.filter(fmin, fmax, n_jobs=n_jobs)
 
-data_cov = mne.compute_covariance(epochs, method='shrunk', cv=4, n_jobs=n_jobs)
+if (fmin!=None) and (fmax!=None):
+    epochs.filter(fmin, fmax, n_jobs=n_jobs)
+
+
+data_cov = mne.compute_covariance(epochs, method='empirical') 
 
 
 
@@ -204,7 +207,7 @@ bem_fname = deriv_path.copy().update(suffix='bem', extension='.fif')
 fwd_fname = deriv_path.copy().update(suffix='fwd', extension='.fif')
 src_fname = deriv_path.copy().update(suffix='src', extension='.fif')
 trans_fname = deriv_path.copy().update(suffix='trans',extension='.fif')
-raw = mne.io.read_raw_ctf(raw_fname.fpath, system_clock = 'ignore', clean_names =True)
+# raw = mne.io.read_raw_ctf(raw_fname.fpath, system_clock = 'ignore', clean_names =True)
 
 
 fs_subject = 'sub-'+bids_path.subject
@@ -250,6 +253,73 @@ filters = make_lcmv(epochs.info, fwd, data_cov, #noise_cov=noise_cov,
 stcs = apply_lcmv_epochs(epochs=epochs, filters=filters, return_generator=False)  
 
 
+#%% Extract PCA of the consistent oriented vertices
+
+from mne.fixes import _safe_svd
+import numpy as np
+
+# Mod of the pca flip from mne v1.5 - No flip used
+def _pca(data):
+    U, s, V = _safe_svd(data, full_matrices=False)
+    # use average power in label for scaling
+    scale = np.linalg.norm(s) / np.sqrt(len(data))
+    return scale * V[0]
+
+def get_label_vertex_idxs(label, stc):
+    if label.hemi=='lh':
+        hemi_idx=0
+        hemi_offset = 0
+    else:
+        hemi_idx=1
+        hemi_offset = len(stc.vertices[0])
+    label_stc_vertices = label.get_vertices_used(stc.vertices[hemi_idx])
+    label_vert_idxs = np.searchsorted(stc.vertices[hemi_idx], label_stc_vertices)
+    return label_vert_idxs
+    
+
+def get_full_label_ts(label, stcs):
+    '''Returns a continuous dataset of the stcs data from the label'''
+    label_vert_idxs = get_label_vertex_idxs(label, stcs[0])
+    
+    #Extract the label vertex data into a list from the stcs
+    _tmp = [stcs[i].data[label_vert_idxs,:] for i in range(len(stcs))]
+    #Concatenate to get a timeseries of Vertices X epoTime   (epoTime is concatenation along epochs and time)
+    label_ts = np.concatenate(_tmp, axis=1) 
+    return label_ts
+
+def flip_verts(label, stcs):
+    '''Compute the label vertices flips based on correlations with 1st PCA.
+    '''
+    label_vert_data = get_full_label_ts(label, stcs)
+    label_pca = _pca(label_vert_data)
+    
+    # Identify the in-phase data to determine the flips
+    _tmp = np.dot(label_pca, label_vert_data.T)
+    flips = _tmp<0
+    label_vert_data[flips,:] *= -1
+    return label_vert_data
+
+
+def _compute_label_ts(label, stcs):
+    label_vert_data = flip_verts(label,stcs)
+
+    #Get the final PCA after performing the flips
+    label_data = _pca(label_vert_data)
+
+    #Reshape the pca back into epochs
+    epo_label_pca = label_data.reshape([len(stcs), stcs[0].shape[-1]])
+    
+    return epo_label_pca
+
+def extract_label_ts(labels, stcs):
+    label_dat=[]
+    for label in labels:
+        print(label.name)
+        label_dat.append(_compute_label_ts(label, stcs))
+    return np.stack(label_dat)
+
+
+
 #%% Get the parcels
 
 labels = mne.read_labels_from_annot(
@@ -259,53 +329,72 @@ labels = mne.read_labels_from_annot(
 #Re-order labels to be lhemi then rhemi
 labels = labels[::2] + labels[1::2]
 
-def get_centroid_idx(label=None, stc=None, hemi=None):
-    '''
-    Return the numpy index of the centroid corresponding to the center of mass
-    '''
-    if hemi=='lh':
-        hemi_idx=0
-        hemi_offset = 0
-    else:
-        hemi_idx=1
-        hemi_offset = len(stc.vertices[0])
-    _used_verts = label.get_vertices_used(stc.vertices[hemi_idx])
-    #Get the center of mass from the used label vertices - returns freesurfer vertex
-    COM_idx = label.center_of_mass(restrict_vertices=_used_verts, subjects_dir=subjects_dir)
-    #Get the numpy index of this vertex
-    np_idx = np.where(stc.vertices[hemi_idx]==COM_idx)[0][0]
-    np_idx += hemi_offset
-    return np_idx
+# def get_centroid_idx(label=None, stc=None, hemi=None):
+#     '''
+#     Return the numpy index of the centroid corresponding to the center of mass
+#     '''
+#     if hemi=='lh':
+#         hemi_idx=0
+#         hemi_offset = 0
+#     else:
+#         hemi_idx=1
+#         hemi_offset = len(stc.vertices[0])
+#     _used_verts = label.get_vertices_used(stc.vertices[hemi_idx])
+#     #Get the center of mass from the used label vertices - returns freesurfer vertex
+#     COM_idx = label.center_of_mass(restrict_vertices=_used_verts, subjects_dir=subjects_dir)
+#     #Get the numpy index of this vertex
+#     np_idx = np.where(stc.vertices[hemi_idx]==COM_idx)[0][0]
+#     np_idx += hemi_offset
+#     return np_idx
 
 
-template_stc = stcs[0]
-label_idxs = {i.name:None for i in labels}
-for label in labels:
-    COM = label.center_of_mass(restrict_vertices=True, subjects_dir=subjects_dir)
-    label_idxs[label.name] = get_centroid_idx(label=label, stc=template_stc, hemi=label.hemi)
+# template_stc = stcs[0]
+# label_idxs = {i.name:None for i in labels}
+# for label in labels:
+#     COM = label.center_of_mass(restrict_vertices=True, subjects_dir=subjects_dir)
+#     label_idxs[label.name] = get_centroid_idx(label=label, stc=template_stc, hemi=label.hemi)
     
 
-# import copy
-# test_stc = copy.deepcopy(stcs[0])
-# test_stc._data=np.zeros(test_stc._data.shape)
-# for idx in label_idxs.values():
-#     test_stc._data[idx,:]=5
+# # import copy
+# # test_stc = copy.deepcopy(stcs[0])
+# # test_stc._data=np.zeros(test_stc._data.shape)
+# # for idx in label_idxs.values():
+# #     test_stc._data[idx,:]=5
 
 
-# test_stc._data[4011,:]=5
-# test_stc._data[4745,:]=5
-#  'precuneus-lh': 4011,
-#  'precuneus-rh': 4745,
+# # test_stc._data[4011,:]=5
+# # test_stc._data[4745,:]=5
+# #  'precuneus-lh': 4011,
+# #  'precuneus-rh': 4745,
 
 #%%  Convert STC matrix into centroid ROI matrix
-roi_len=len(labels)
-roi_idx_vector = list(label_idxs.values())
-#Initialize matrix   Epochs X ROI X Time
-roi_matrix = np.zeros([len(stcs), roi_len, template_stc.shape[-1]])
-for epo_idx, stc in enumerate(stcs):
-    roi_matrix[epo_idx, :, :] = stc._data[roi_idx_vector, :]
+# roi_len=len(labels)
+# roi_idx_vector = list(label_idxs.values())
+# #Initialize matrix   Epochs X ROI X Time
+# roi_matrix = np.zeros([len(stcs), roi_len, template_stc.shape[-1]])
+# for epo_idx, stc in enumerate(stcs):
+#     roi_matrix[epo_idx, :, :] = stc._data[roi_idx_vector, :]
+
+
+
     
-np.save(f'{output_dir}/sub-{bids_id}.npy', roi_matrix)    
+# np.save(f'{output_dir}/sub-{bids_id}.npy', roi_matrix)    
+# labelnames = [i.name for i in labels]
+# label_fname = f'{output_dir}/sub-{bids_id}_label_ids.txt'
+# with open(label_fname, 'w+') as f:
+#     for idx,i in enumerate(labels):
+#         f.write(f'{i.name}\n')
+#         print(idx)
+# print('\n\n')
+# print('!!!!!!!!! FINISHED !!!!!!!!!!!!!!!!')
+# print('\n\n')
+
+#%% From 
+
+label_mat = extract_label_ts(labels, stcs)
+label_mat = np.swapaxes(label_mat, 0, 1) # Connectivity expects Epochs x Label x Time
+    
+np.save(f'{output_dir}/sub-{bids_id}.npy', label_mat)    
 labelnames = [i.name for i in labels]
 label_fname = f'{output_dir}/sub-{bids_id}_label_ids.txt'
 with open(label_fname, 'w+') as f:
@@ -315,3 +404,4 @@ with open(label_fname, 'w+') as f:
 print('\n\n')
 print('!!!!!!!!! FINISHED !!!!!!!!!!!!!!!!')
 print('\n\n')
+
