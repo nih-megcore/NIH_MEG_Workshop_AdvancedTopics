@@ -15,9 +15,9 @@
 | 9:30 - 10:30 | Connectivity Background | Lucrezia |
 | 10:30 - 11:30 | Connectivity Code | |
 | 11:30 - 12:30 | Lunch  
-| ?           |  Decoding Background  |  Lina | 
-| ?           |  Decoding Applications  |  Shruti, Alexis, Sebastian | 
-| ?           |  Decoding Code  |  | 
+| 12:30 - 1:30  |  Decoding Background  |  Lina | 
+| 1:45 - 2:30   |  Decoding Applications  |  Shruti, Alexis, Sebastian | 
+| 2:30 - 4:00   |  Decoding Code  |  | 
 
 
 
