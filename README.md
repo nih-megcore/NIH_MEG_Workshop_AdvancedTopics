@@ -10,11 +10,11 @@
 ### Connectivity and Decoding
 | Time  | Topic | Presenter |
 | :---- | ---- | ---- |
-| 9:00 - 9:10 | Bagel Config + Coffee Download + Computer Setup |
-| ? | Course Intro | Jeff |
-| ? | Connectivity Background | Lucrezia |
-| ? | Connectivity Code | |
-| 11:45 - 12:30 | Lunch  
+| 9:00 - 9:15 | Bagel Config + Coffee Download + Computer Setup |
+| 9:15 - 9:30 | Course Intro + Souce Localization (for connectivity) | Jeff |
+| 9:30 - 10:30 | Connectivity Background | Lucrezia |
+| 10:30 - 11:30 | Connectivity Code | |
+| 11:30 - 12:30 | Lunch  
 | ?           |  Decoding Background  |  Lina | 
 | ?           |  Decoding Applications  |  Shruti, Alexis, Sebastian | 
 | ?           |  Decoding Code  |  | 
