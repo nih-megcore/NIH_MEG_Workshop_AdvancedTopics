@@ -72,6 +72,7 @@ get_data   #Copy and untar the data to your /data/${USER}/meg_data_workshop
 cd /data/${USER}/NIH_MEG_Workshop_AdvancedTopics
 jupyter notebook --no-browser --port $PORT1
 ```
+![JupyterToken](extras/images/TokenEntryJupyter.png)
 
 Enter this into the address bar of your web browser `localhost:<PORT>` <br>
 ![JupyterLogin](extras/images/Jupyter_login.png)
