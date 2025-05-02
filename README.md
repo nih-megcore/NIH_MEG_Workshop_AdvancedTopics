@@ -27,18 +27,18 @@
 Copy the following lines into your terminal.
 This will copy the code/notebooks and data into your local folder.  
 ```
-sinteractive --mem=16G --cpus-per-task=12 --gres=lscratch:10  #Wait for this to start
+sinteractive --mem=32G --cpus-per-task=12 --tunnel  #Wait for this to start
 ```
 
 ```
 module use --append /data/MEGmodules/modulefiles  #You can add this to your .bashrc for convenience
-module load meg_workshop_advp1
+module load meg_workshop/2025adv.1
 
 get_code   #Copy the code to your current directory
 get_data   #Copy and untar the data to your /data/${USER}/meg_data_workshop
 
-cd NIMH_MEG_workshop
-jupyter lab
+cd /data/${USER}/NIH_MEG_Workshop_AdvancedTopics
+jupyter notebook --no-browser --port $PORT1
 ```
 
 <a id="Install"></a>
