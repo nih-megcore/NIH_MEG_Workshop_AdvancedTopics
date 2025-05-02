@@ -10,7 +10,7 @@
 ### Connectivity and Decoding
 | Time  | Topic | Presenter |
 | :---- | ---- | ---- |
-| 9:00 - 9:15 | Bagel Config + Coffee Download + Computer Setup |
+| 9:00 - 9:15 | Computer Setup etc |
 | 9:15 - 9:30 | Course Intro + Souce Localization (for connectivity) | Jeff |
 | 9:30 - 10:30 | Connectivity Background | Lucrezia |
 | 10:30 - 11:30 | Connectivity Code | |
