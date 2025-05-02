@@ -1,0 +1,17 @@
+if [ -d /data/${USER}/meg_workshop_ConnDec_data ];
+then 
+	rsync -av /vf/users/MEGmodules/modules/meg_workshop_2025adv_extras/NIH_MEG_Workshop_AdvancedTopics/data/Decoding  /data/${USER}/meg_workshop_2025adv/Decoding
+	rsync -av /vf/users/MEGmodules/modules/meg_workshop_2025adv_extras/NIH_MEG_Workshop_AdvancedTopics/data/Connectivity  /data/${USER}/meg_workshop_2025adv/Connectivity
+        echo Updated MEG workshop Data
+else
+	mkdir /data/${USER}/meg_workshop_2025adv
+        cp -R  /vf/users/MEGmodules/modules/meg_workshop_2025adv_extras/NIH_MEG_Workshop_AdvancedTopics/data/Decoding.tar.gz /data/${USER}/meg_workshop_2025adv/
+	cd /data/${USER}/meg_workshop_2025adv
+	tar -xvf Decoding.tar.gz
+	rm Decoding.tar.gz
+	echo ##################################################
+	echo Copied the NIMH_MEG_workshop DATA to /data/${USER}/meg_workshop_2025adv
+	echo ##################################################
+
+fi
+

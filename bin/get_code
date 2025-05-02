@@ -1,0 +1,9 @@
+if [ ! -d /data/${USER}/NIH_MEG_Workshop_AdvancedTopics ]; then
+    git clone /data/MEGmodules/modules/meg_workshop_2025adv_extras/NIH_MEG_Workshop_AdvancedTopics /data/${USER}/NIH_MEG_Workshop_AdvancedTopics
+    echo Copied the NIMH_MEG_workshop folder to $(pwd)
+else
+    cd /data/${USER}/NIH_MEG_Workshop_AdvancedTopics
+    git pull
+fi
+echo ''
+echo "NOTE:If you get a permission error - delete your current NIMH_MEG_workshop folder and try again"
