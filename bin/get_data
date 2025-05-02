@@ -6,9 +6,12 @@ then
 else
 	mkdir /data/${USER}/meg_workshop_2025adv
         cp -R  /vf/users/MEGmodules/modules/meg_workshop_2025adv_extras/NIH_MEG_Workshop_AdvancedTopics/data/Decoding.tar.gz /data/${USER}/meg_workshop_2025adv/
+        cp -R  /vf/users/MEGmodules/modules/meg_workshop_2025adv_extras/NIH_MEG_Workshop_AdvancedTopics/data/Connectivity.tar.gz /data/${USER}/meg_workshop_2025adv/
 	cd /data/${USER}/meg_workshop_2025adv
 	tar -xvf Decoding.tar.gz
 	rm Decoding.tar.gz
+        tar -xvf Connectivity.tar.gz
+        rm Connectivity.tar.gz
 	echo ##################################################
 	echo Copied the NIMH_MEG_workshop DATA to /data/${USER}/meg_workshop_2025adv
 	echo ##################################################
