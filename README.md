@@ -33,10 +33,12 @@ sinteractive --mem=32G --cpus-per-task=12 --tunnel  #Wait for this to start
 ```
 module use --append /data/MEGmodules/modulefiles  #You can add this to your .bashrc for convenience
 module load meg_workshop/2025adv.1
-
+```
+```
 get_code   #Copy the code to your current directory
 get_data   #Copy and untar the data to your /data/${USER}/meg_data_workshop
-
+```
+```
 cd /data/${USER}/NIH_MEG_Workshop_AdvancedTopics
 jupyter notebook --no-browser --port $PORT1
 ```
