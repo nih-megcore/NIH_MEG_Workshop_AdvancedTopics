@@ -42,7 +42,11 @@ get_data   #Copy and untar the data to your /data/${USER}/meg_data_workshop
 cd /data/${USER}/NIH_MEG_Workshop_AdvancedTopics
 jupyter notebook --no-browser --port $PORT1
 ```
-Once the 
+Once the prompts come up, you will see a line like the following:
+![JupyterToken](extras/images/TokenEntryJupyter.png)
+
+Open an Internet Browser in the top left corner and add the IP address and token into the address bar
+
 <a id="BiowulfInfoV2"></a>
 # Alternative version using SSH Tunnels (This is more difficult to setup, but faster to use)
 Log into biowulf:  `ssh -Y USERNAME@biowulf.nih.gov`
