@@ -44,7 +44,7 @@ jupyter notebook --no-browser --port $PORT1
 ```
 
 <a id="Install"></a>
-# Install Code (on your own system)
+# Optional: Install Code (on your own system)
 Install using make: <br>
 `make install_env`
 <br>
